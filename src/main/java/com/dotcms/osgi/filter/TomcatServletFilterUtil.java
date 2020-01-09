@@ -1,4 +1,4 @@
-package com.dotmarketing.osgi.servlet;
+package com.dotcms.osgi.filter;
 
 import java.lang.reflect.Field;
 

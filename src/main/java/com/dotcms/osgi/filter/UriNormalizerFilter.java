@@ -1,4 +1,4 @@
-package com.dotmarketing.osgi.servlet;
+package com.dotcms.osgi.filter;
 
 import java.io.IOException;
 import java.net.URI;
