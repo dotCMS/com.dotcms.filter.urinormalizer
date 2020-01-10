@@ -13,7 +13,7 @@ dependencies {
     compile('com.dotcms:dotcms:5.0.0')
     compile 'org.apache.tomcat:tomcat-catalina:8.5.24'
     compile "javax.servlet:javax.servlet-api:3.0.1"
-    compile group: 'io.vavr', name: 'vavr', version: '0.9.0'
+
 }
 
 import java.util.jar.*

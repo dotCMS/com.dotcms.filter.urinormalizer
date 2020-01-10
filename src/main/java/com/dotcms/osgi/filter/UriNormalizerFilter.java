@@ -10,7 +10,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import io.vavr.Function0;
 
 public class UriNormalizerFilter implements Filter {
     @Override
@@ -21,13 +20,10 @@ public class UriNormalizerFilter implements Filter {
                     final FilterChain filterChain) throws IOException, ServletException {
         final HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper((HttpServletRequest) servletRequest) {
 
-            private Function0<String> normalizeUri =
-                            Function0.of(() -> URI.create(super.getRequestURI()).normalize().toString()).memoized();
-
 
             @Override
             public String getRequestURI() {
-                return normalizeUri.apply();
+                return URI.create(super.getRequestURI()).normalize().toString();
             }
         };
         filterChain.doFilter(requestWrapper, servletResponse);
