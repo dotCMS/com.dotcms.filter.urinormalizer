@@ -23,7 +23,14 @@ public class UriNormalizerFilter implements Filter {
 
             @Override
             public String getRequestURI() {
-                return URI.create(super.getRequestURI()).normalize().toString();
+                String newNormal = URI.create(super.getRequestURI()).normalize().toString();
+
+                while(newNormal.indexOf("//")>-1) {
+                    newNormal = newNormal.replace("//", "/");
+                }
+                return newNormal;
+                
+                
             }
         };
         filterChain.doFilter(requestWrapper, servletResponse);
