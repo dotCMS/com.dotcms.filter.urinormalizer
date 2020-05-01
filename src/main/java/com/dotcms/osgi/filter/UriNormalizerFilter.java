@@ -15,27 +15,55 @@ public class UriNormalizerFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {}
 
+    final static String SLASH=StringPool.FORWARD_SLASH;
+    final static String DOUBLESLASH=StringPool.FORWARD_SLASH + StringPool.FORWARD_SLASH;
+    final static String QUESTION=StringPool.QUESTION ;
+    final static String DOUBLEPEROIDS=StringPool.PERIOD + StringPool.PERIOD;
     @Override
-    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
-                    final FilterChain filterChain) throws IOException, ServletException {
-        final HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper((HttpServletRequest) servletRequest) {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
+            FilterChain filterChain) throws IOException, ServletException {
 
+        HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(
+                (HttpServletRequest) servletRequest) {
 
             @Override
             public String getRequestURI() {
-                String newNormal = URI.create(super.getRequestURI()).normalize().toString();
+                try {
+                    /* Normalization is the process of removing unnecessary "." and ".." segments from the path component of a hierarchical URI.
+                     1. Each "." segment is simply removed.
+                     2. A ".." segment is removed only if it is preceded by a non-".." segment.
+                     3. Normalization has no effect upon opaque URIs. (mailto:a@b.com)
+                     */
 
-                while(newNormal.indexOf("//")>-1) {
-                    newNormal = newNormal.replace("//", "/");
+                    String newNormal = URI.create(super.getRequestURI()).normalize().toString();
+                    newNormal = newNormal.startsWith(DOUBLEPEROIDS) ? newNormal.replace(DOUBLEPEROIDS, "") : newNormal;
+                    newNormal = newNormal.startsWith(SLASH) ? newNormal : SLASH + newNormal;
+
+                    // this should not happen 
+                    newNormal = newNormal.indexOf(QUESTION )>-1 ? newNormal.substring(0,newNormal.indexOf(StringPool.QUESTION)) : newNormal;
+                    while(newNormal.indexOf(DOUBLESLASH)>-1) {
+                        newNormal = newNormal.replace(DOUBLESLASH, SLASH);
+                    }
+                    return newNormal;
                 }
-                return newNormal;
-                
-                
+                catch(IllegalArgumentException ill) {
+                    Logger.warnAndDebug(this.getClass(),ill);
+                    HttpServletResponse response= (HttpServletResponse) servletResponse;
+                    try {
+                        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                        response.flushBuffer();
+                    }
+                    catch(Exception e) {}
+                    return "/";
+                    
+                }
             }
+
         };
+
         filterChain.doFilter(requestWrapper, servletResponse);
     }
-
+    
     @Override
     public void destroy() {}
 }
