@@ -10,10 +10,19 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import com.dotmarketing.util.Logger;
+import com.liferay.util.StringPool;
 
+/**
+ * Filter created to wrap all the incoming requests to override the {@link
+ * HttpServletRequest#getRequestURI()} method in order to normalize the requested URIs.
+ */
 public class UriNormalizerFilter implements Filter {
+
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
 
     final static String SLASH=StringPool.FORWARD_SLASH;
     final static String DOUBLESLASH=StringPool.FORWARD_SLASH + StringPool.FORWARD_SLASH;
@@ -47,7 +56,8 @@ public class UriNormalizerFilter implements Filter {
                     return newNormal;
                 }
                 catch(IllegalArgumentException ill) {
-                    Logger.warnAndDebug(this.getClass(),ill);
+                    Logger.warn(this.getClass(),ill.getMessage());
+                    Logger.debug(this.getClass(), ill.getMessage(),ill);
                     HttpServletResponse response= (HttpServletResponse) servletResponse;
                     try {
                         response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -63,7 +73,9 @@ public class UriNormalizerFilter implements Filter {
 
         filterChain.doFilter(requestWrapper, servletResponse);
     }
-    
+
     @Override
-    public void destroy() {}
+    public void destroy() {
+    }
+
 }
