@@ -12,7 +12,7 @@ This plugin normalizes the request.uri returned by `request.getRequestURI()` bef
 This plugin was built against dotCMS 5.2.8 but should work from 5.0 on up.
 
 
-To test that the filter is working, attempt to visit this url:
+To test that the filter is working, attempt to visit this url (note the two // after the hostname).
 
 https://{yoursite}//html/portlet/ext/files/edit_text_inc.jsp
 
