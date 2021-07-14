@@ -11,6 +11,7 @@ This plugin normalizes the request.uri returned by `request.getRequestURI()` bef
 
 This plugin was built against dotCMS 5.2.8 but should work from 5.0 on up.
 
+This plugin is not needed on the latest LTS versions and on dotCMS version > 21.02
 
 To test that the filter is working, attempt to visit this url (note the two // after the hostname).
 
